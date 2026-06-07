@@ -2237,9 +2237,15 @@ input[type="text"]:focus {
     font-size: 15px;
     font-weight: 500;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    animation: toastSlideIn 0.3s ease;
     position: relative;
     overflow: hidden;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    z-index: 2000;
+}
+
+.toast.show {
+    transform: translateX(0);
 }
 
 /* Toast进度条 */
