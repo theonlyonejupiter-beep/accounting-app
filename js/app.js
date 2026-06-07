@@ -1273,3 +1273,59 @@ const App = {
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
 });
+
+// 移动端优化
+(function() {
+    'use strict';
+
+    // 检测是否是移动设备
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isMobile) {
+        // 防止双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // iOS 输入框焦点处理
+        if (isIOS) {
+            // 输入框获得焦点时，确保可见
+            document.addEventListener('focusin', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    // 延迟滚动，等待键盘弹出
+                    setTimeout(function() {
+                        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                }
+            });
+
+            // 输入框失去焦点时，恢复页面
+            document.addEventListener('focusout', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    // 恢复页面位置
+                    window.scrollTo(0, 0);
+                }
+            });
+        }
+
+        // 优化触摸滚动
+        document.addEventListener('touchmove', function(e) {
+            // 允许在可滚动区域内的滚动
+            const scrollable = e.target.closest('.records-list, .preview-table-wrapper, .modal-body, .main-content');
+            if (!scrollable) {
+                // 如果不在可滚动区域，阻止默认行为（防止弹性滚动）
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+            }
+        }, { passive: false });
+
+        console.log('移动端优化已启用');
+    }
+})();

@@ -3340,6 +3340,18 @@ input[type="text"]:focus {
 
 /* ========== PWA移动端优化 ========== */
 
+/* iOS输入框防缩放 - 必须放在最前面 */
+@supports (-webkit-touch-callout: none) {
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="search"],
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
+}
+
 /* 小屏幕手机优化 */
 @media (max-width: 480px) {
     .header {
@@ -3419,6 +3431,68 @@ input[type="text"]:focus {
 
     .record-summary {
         font-size: 12px;
+    }
+
+    /* 统计小卡优化 */
+    .stats-mini-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 0 12px 12px;
+    }
+
+    .mini-card {
+        padding: 12px;
+    }
+
+    .mini-card-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+
+    .mini-card-value {
+        font-size: 16px;
+    }
+
+    /* 洞察横条优化 */
+    .insight-bar {
+        margin: 0 12px 12px;
+        padding: 12px;
+    }
+
+    .insight-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .insight-text {
+        font-size: 12px;
+    }
+
+    /* 日历热力图优化 */
+    .calendar-heatmap {
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .calendar-day {
+        font-size: 11px;
+        border-radius: 6px;
+    }
+
+    /* 记录标签优化 */
+    .record-tags {
+        gap: 4px;
+    }
+
+    .record-tag {
+        font-size: 10px;
+        padding: 1px 6px;
     }
 
     .modal {
@@ -3522,6 +3596,66 @@ input[type="text"]:focus {
 .template-list {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+}
+
+/* 移动端全局优化 */
+@media (max-width: 768px) {
+    /* 禁用双击缩放 */
+    * {
+        touch-action: manipulation;
+    }
+
+    /* 优化滚动性能 */
+    .records-list,
+    .preview-table-wrapper {
+        will-change: transform;
+    }
+
+    /* 优化动画性能 */
+    .account-card,
+    .mini-card,
+    .chart-card,
+    .record-item {
+        will-change: transform;
+    }
+
+    /* 禁用长按菜单 */
+    .record-item,
+    .account-card,
+    .mini-card {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* 允许文本选择 */
+    .record-note,
+    .record-category,
+    .stat-value {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+}
+
+/* iOS Safari 特殊优化 */
+@supports (-webkit-touch-callout: none) {
+    /* iOS设备 */
+    .modal {
+        max-height: -webkit-fill-available;
+    }
+
+    /* iOS弹性滚动修复 */
+    body {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+    }
+
+    .main-content {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        height: calc(100vh - 200px);
+    }
 }
 
 /* PWA安装提示横幅 */
