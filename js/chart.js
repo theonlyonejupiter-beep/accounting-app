@@ -34,8 +34,8 @@ const ChartModule = {
      * 更新所有图表
      */
     update() {
-        this.renderExpensePie();
-        this.renderIncomePie();
+        this.renderExpenseRank();
+        this.renderBudgetProgress();
         this.renderDailyTrend();
     },
 
@@ -352,5 +352,126 @@ const ChartModule = {
                 }
             }
         });
+    },
+
+    /**
+     * 渲染支出分类排行
+     */
+    renderExpenseRank() {
+        try {
+            const categories = this.getCategoryStats('expense');
+            const rankList = document.getElementById('expenseRankList');
+            if (!rankList) return;
+
+            if (categories.length === 0) {
+                rankList.innerHTML = '<div class="empty-chart"><i class="fas fa-chart-bar"></i><p>暂无支出数据</p></div>';
+                return;
+            }
+
+            const total = categories.reduce((sum, cat) => Utils.add(sum, cat.amount), 0);
+            const maxAmount = categories[0].amount;
+            const displayCategories = categories.slice(0, 6);
+
+            let html = '';
+            displayCategories.forEach((cat, index) => {
+                const percent = total > 0 ? (cat.amount / total * 100) : 0;
+                const barWidth = maxAmount > 0 ? (cat.amount / maxAmount * 100) : 0;
+                const color = this.colors[index % this.colors.length];
+
+                html += `
+                    <div class="rank-item">
+                        <span class="rank-color" style="background: ${color}"></span>
+                        <span class="rank-name">${cat.name}</span>
+                        <div class="rank-bar-wrapper">
+                            <div class="rank-bar" style="width: ${barWidth}%; background: ${color}"></div>
+                        </div>
+                        <span class="rank-percent">${percent.toFixed(1)}%</span>
+                        <span class="rank-amount">${Utils.formatAmount(cat.amount)}</span>
+                    </div>
+                `;
+            });
+
+            rankList.innerHTML = html;
+        } catch (error) {
+            console.error('渲染支出分类排行失败:', error);
+        }
+    },
+
+    /**
+     * 渲染预算执行进度
+     */
+    renderBudgetProgress() {
+        try {
+            const progressList = document.getElementById('budgetProgressList');
+            if (!progressList) return;
+
+            // 获取预算设置
+            const budgetData = localStorage.getItem('monthly_budget');
+            if (!budgetData) {
+                progressList.innerHTML = '<div class="empty-chart"><i class="fas fa-tasks"></i><p>暂未设置预算</p></div>';
+                return;
+            }
+
+            const budget = JSON.parse(budgetData);
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+            // 检查是否是本月预算
+            if (budget.month !== currentMonth || !budget.amount) {
+                progressList.innerHTML = '<div class="empty-chart"><i class="fas fa-tasks"></i><p>暂未设置本月预算</p></div>';
+                return;
+            }
+
+            // 获取本月支出
+            const year = App.state.selectedYear;
+            const month = App.state.selectedMonth;
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const monthStart = `${year}-${String(month).padStart(2, '0')}-01`;
+            const monthEnd = `${year}-${String(month).padStart(2, '0')}-${daysInMonth}`;
+            const monthStats = Storage.getStats({ startDate: monthStart, endDate: monthEnd });
+
+            const budgetAmount = budget.amount;
+            const spent = monthStats.total.expense;
+            const remaining = Utils.subtract(budgetAmount, spent);
+            const percentage = budgetAmount > 0 ? (spent / budgetAmount * 100) : 0;
+
+            // 确定状态
+            let status = 'normal';
+            let statusText = '正常';
+            if (percentage >= 100) {
+                status = 'danger';
+                statusText = '已超支';
+            } else if (percentage >= 90) {
+                status = 'warning';
+                statusText = '即将超支';
+            } else if (percentage >= 80) {
+                status = 'warning';
+                statusText = '需注意';
+            }
+
+            const html = `
+                <div class="budget-progress-item">
+                    <div class="budget-progress-header">
+                        <span class="budget-progress-name">本月总预算</span>
+                        <span class="budget-progress-status">${statusText}</span>
+                    </div>
+                    <div class="budget-progress-bar-wrapper">
+                        <div class="budget-progress-bar ${status}" style="width: ${Math.min(percentage, 100)}%"></div>
+                    </div>
+                    <div class="budget-progress-detail">
+                        <span>已用: ${Utils.formatAmount(spent)}</span>
+                        <span>预算: ${Utils.formatAmount(budgetAmount)}</span>
+                    </div>
+                    <div class="budget-progress-detail">
+                        <span>剩余: ${Utils.formatAmount(remaining)}</span>
+                        <span>${percentage.toFixed(1)}%</span>
+                    </div>
+                </div>
+            `;
+
+            progressList.innerHTML = html;
+        } catch (error) {
+            console.error('渲染预算执行进度失败:', error);
+        }
     }
 };

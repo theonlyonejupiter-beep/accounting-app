@@ -431,6 +431,161 @@ body {
     color: #fca5a5;
 }
 
+/* ========== 4格统计小卡 ========== */
+.stats-mini-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 0 24px 16px;
+    animation: fadeInUp 0.6s ease-out 0.5s;
+    animation-fill-mode: both;
+}
+
+.mini-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    animation: miniCardSlideIn 0.4s ease-out;
+    animation-fill-mode: both;
+}
+
+.mini-card:nth-child(1) { animation-delay: 0.5s; }
+.mini-card:nth-child(2) { animation-delay: 0.6s; }
+.mini-card:nth-child(3) { animation-delay: 0.7s; }
+.mini-card:nth-child(4) { animation-delay: 0.8s; }
+
+@keyframes miniCardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mini-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.mini-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.mini-card:nth-child(2) .mini-card-icon {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+
+.mini-card:nth-child(3) .mini-card-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.mini-card:nth-child(4) .mini-card-icon {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.mini-card-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mini-card-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+}
+
+.mini-card-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.mini-card-diff {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.mini-card-diff.positive {
+    color: var(--income-color);
+}
+
+.mini-card-diff.negative {
+    color: var(--expense-color);
+}
+
+/* ========== 消费洞察横条 ========== */
+.insight-bar {
+    margin: 0 24px 16px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeInUp 0.6s ease-out 0.9s;
+    animation-fill-mode: both;
+}
+
+.insight-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    flex-shrink: 0;
+    animation: lightbulbPulse 2s ease-in-out infinite;
+}
+
+@keyframes lightbulbPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(99, 102, 241, 0);
+    }
+}
+
+.insight-text {
+    flex: 1;
+    font-size: 13px;
+    color: #4338ca;
+    line-height: 1.5;
+}
+
+[data-theme="dark"] .insight-bar {
+    background: linear-gradient(135deg, #312e81, #3730a3);
+}
+
+[data-theme="dark"] .insight-text {
+    color: #c7d2fe;
+}
+
 /* ========== 筛选区域 ========== */
 .filter-section {
     padding: 0 24px 16px;
@@ -767,6 +922,137 @@ body {
     gap: 16px;
 }
 
+/* 分类排行列表 */
+.category-rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.rank-item:last-child {
+    border-bottom: none;
+}
+
+.rank-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.rank-name {
+    width: 60px;
+    font-size: 13px;
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+.rank-bar-wrapper {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rank-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.rank-percent {
+    width: 45px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.rank-amount {
+    width: 70px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-shrink: 0;
+}
+
+/* 预算执行进度列表 */
+.budget-progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.budget-progress-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.budget-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.budget-progress-name {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.budget-progress-status {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.budget-progress-bar-wrapper {
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.budget-progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.budget-progress-bar.normal {
+    background: var(--primary-color);
+}
+
+.budget-progress-bar.warning {
+    background: #f59e0b;
+}
+
+.budget-progress-bar.danger {
+    background: var(--expense-color);
+}
+
+.budget-progress-detail {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .rank-bar-wrapper,
+[data-theme="dark"] .budget-progress-bar-wrapper {
+    background: #334155;
+}
+
 .chart-card {
     background: var(--card-bg);
     border-radius: 16px;
@@ -920,6 +1206,149 @@ body {
     font-size: 13px;
 }
 
+/* ========== 消费日历热力图 ========== */
+.calendar-heatmap {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.6s ease-out 1.2s;
+    animation-fill-mode: both;
+}
+
+.calendar-header {
+    margin-bottom: 16px;
+}
+
+.calendar-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.calendar-header h3 i {
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.calendar-weekdays span {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 4px 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.calendar-day:hover {
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.calendar-day.empty:hover {
+    transform: none;
+}
+
+.calendar-day.level-0 {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+}
+
+.calendar-day.level-1 {
+    background: #e0e7ff;
+    color: var(--primary-color);
+}
+
+.calendar-day.level-2 {
+    background: #a5b4fc;
+    color: white;
+}
+
+.calendar-day.level-3 {
+    background: #6366f1;
+    color: white;
+}
+
+.calendar-day .day-number {
+    font-weight: 500;
+}
+
+/* Tooltip */
+.calendar-day::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-primary);
+    color: var(--card-bg);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.calendar-day:hover::after {
+    opacity: 1;
+    visibility: visible;
+    bottom: calc(100% + 6px);
+}
+
+/* 深色模式 */
+[data-theme="dark"] .calendar-day.level-0 {
+    background: #1e293b;
+}
+
+[data-theme="dark"] .calendar-day.level-1 {
+    background: #312e81;
+}
+
+[data-theme="dark"] .calendar-day.level-2 {
+    background: #4338ca;
+}
+
+[data-theme="dark"] .calendar-day.level-3 {
+    background: #6366f1;
+}
+
 /* ========== 记录列表 ========== */
 .records-section {
     background: var(--card-bg);
@@ -1015,12 +1444,19 @@ body {
 }
 
 .record-date-group .date-total {
+    display: flex;
+    gap: 12px;
     font-size: 12px;
-    padding: 2px 8px;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 10px;
-    font-weight: 500;
+}
+
+.date-expense {
+    color: var(--expense-color);
+    font-weight: 600;
+}
+
+.date-income {
+    color: var(--income-color);
+    font-weight: 600;
 }
 
 .record-item {
@@ -1112,6 +1548,37 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.record-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+
+.record-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.record-tag:hover {
+    background: #e2e8f0;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .record-tag {
+    background: #334155;
+}
+
+[data-theme="dark"] .record-tag:hover {
+    background: #475569;
 }
 
 .record-account {
@@ -2430,6 +2897,10 @@ input[type="text"]:focus {
     .account-cards {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .stats-mini-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
@@ -2457,6 +2928,11 @@ input[type="text"]:focus {
     .account-cards {
         grid-template-columns: 1fr;
         padding: 16px;
+    }
+
+    .stats-mini-cards {
+        grid-template-columns: 1fr;
+        padding: 0 16px 16px;
     }
 
     .filter-row {

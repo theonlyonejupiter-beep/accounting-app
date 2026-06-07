@@ -103,6 +103,9 @@ const App = {
      */
     refresh() {
         this.updateSummary();
+        this.updateMiniStats();
+        this.updateInsight();
+        this.renderCalendarHeatmap();
         this.renderRecords();
         ChartModule.update();
         BudgetModule.updateDisplay();
@@ -895,6 +898,256 @@ const App = {
     },
 
     /**
+     * 更新4格统计小卡
+     */
+    updateMiniStats() {
+        try {
+            const now = new Date();
+            const year = this.state.selectedYear;
+            const month = this.state.selectedMonth;
+            const today = now.getDate();
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            // 本月日期范围
+            const monthStart = `${year}-${String(month).padStart(2, '0')}-01`;
+            const monthEnd = `${year}-${String(month).padStart(2, '0')}-${daysInMonth}`;
+
+            // 上月日期范围
+            const lastMonth = month === 1 ? 12 : month - 1;
+            const lastYear = month === 1 ? year - 1 : year;
+            const lastDaysInMonth = new Date(lastYear, lastMonth, 0).getDate();
+            const lastMonthStart = `${lastYear}-${String(lastMonth).padStart(2, '0')}-01`;
+            const lastMonthEnd = `${lastYear}-${String(lastMonth).padStart(2, '0')}-${lastDaysInMonth}`;
+            const lastMonthDay = Math.min(today, lastDaysInMonth);
+            const lastMonthSameDayEnd = `${lastYear}-${String(lastMonth).padStart(2, '0')}-${String(lastMonthDay).padStart(2, '0')}`;
+
+            // 本月数据
+            const thisMonthRecords = Storage.filter({ startDate: monthStart, endDate: monthEnd, type: 'expense' });
+            const thisMonthStats = Storage.getStats({ startDate: monthStart, endDate: monthEnd });
+
+            // 上月同期数据
+            const lastMonthRecords = Storage.filter({ startDate: lastMonthStart, endDate: lastMonthSameDayEnd, type: 'expense' });
+            const lastMonthStats = Storage.getStats({ startDate: lastMonthStart, endDate: lastMonthSameDayEnd });
+
+            // 1. 交易笔数
+            const transCount = thisMonthRecords.length;
+            const lastTransCount = lastMonthRecords.length;
+            const transCountDiff = transCount - lastTransCount;
+
+            // 2. 日均支出
+            const currentDay = year === now.getFullYear() && month === now.getMonth() + 1 ? today : daysInMonth;
+            const dailyExpense = currentDay > 0 ? thisMonthStats.total.expense / currentDay : 0;
+            const lastDailyExpense = lastMonthDay > 0 ? lastMonthStats.total.expense / lastMonthDay : 0;
+            const dailyExpenseDiff = dailyExpense - lastDailyExpense;
+
+            // 3. 最大单笔
+            let maxExpense = { amount: 0, category: '' };
+            thisMonthRecords.forEach(r => {
+                const amount = parseFloat(r.amount);
+                if (amount > maxExpense.amount) {
+                    maxExpense = { amount: amount, category: r.category };
+                }
+            });
+            let lastMaxExpense = { amount: 0 };
+            lastMonthRecords.forEach(r => {
+                const amount = parseFloat(r.amount);
+                if (amount > lastMaxExpense.amount) {
+                    lastMaxExpense = { amount: amount };
+                }
+            });
+            const maxExpenseDiff = maxExpense.amount - lastMaxExpense.amount;
+
+            // 4. 结余率
+            const income = thisMonthStats.total.income;
+            const expense = thisMonthStats.total.expense;
+            const balanceRate = income > 0 ? ((income - expense) / income * 100) : 0;
+            const lastIncome = lastMonthStats.total.income;
+            const lastExpense = lastMonthStats.total.expense;
+            const lastBalanceRate = lastIncome > 0 ? ((lastIncome - lastExpense) / lastIncome * 100) : 0;
+            const balanceRateDiff = balanceRate - lastBalanceRate;
+
+            // 更新DOM
+            const miniTransCount = document.getElementById('miniTransCount');
+            const miniTransCountDiff = document.getElementById('miniTransCountDiff');
+            const miniDailyExpense = document.getElementById('miniDailyExpense');
+            const miniDailyExpenseDiff = document.getElementById('miniDailyExpenseDiff');
+            const miniMaxExpense = document.getElementById('miniMaxExpense');
+            const miniMaxExpenseCategory = document.getElementById('miniMaxExpenseCategory');
+            const miniBalanceRate = document.getElementById('miniBalanceRate');
+            const miniBalanceRateDiff = document.getElementById('miniBalanceRateDiff');
+
+            if (miniTransCount) miniTransCount.textContent = transCount;
+            if (miniTransCountDiff) {
+                miniTransCountDiff.textContent = transCountDiff >= 0 ? `+${transCountDiff}` : `${transCountDiff}`;
+                miniTransCountDiff.className = `mini-card-diff ${transCountDiff >= 0 ? 'positive' : 'negative'}`;
+            }
+
+            if (miniDailyExpense) miniDailyExpense.textContent = Utils.formatAmount(dailyExpense);
+            if (miniDailyExpenseDiff) {
+                miniDailyExpenseDiff.textContent = `${dailyExpenseDiff >= 0 ? '+' : ''}${Utils.formatAmount(dailyExpenseDiff)}`;
+                miniDailyExpenseDiff.className = `mini-card-diff ${dailyExpenseDiff <= 0 ? 'positive' : 'negative'}`;
+            }
+
+            if (miniMaxExpense) miniMaxExpense.textContent = Utils.formatAmount(maxExpense.amount);
+            if (miniMaxExpenseCategory) {
+                const catName = maxExpense.category ? Utils.getCategoryById(maxExpense.category, 'expense').name : '--';
+                miniMaxExpenseCategory.textContent = catName;
+                miniMaxExpenseCategory.className = 'mini-card-diff';
+            }
+
+            if (miniBalanceRate) miniBalanceRate.textContent = `${balanceRate.toFixed(1)}%`;
+            if (miniBalanceRateDiff) {
+                miniBalanceRateDiff.textContent = `${balanceRateDiff >= 0 ? '+' : ''}${balanceRateDiff.toFixed(1)}%`;
+                miniBalanceRateDiff.className = `mini-card-diff ${balanceRateDiff >= 0 ? 'positive' : 'negative'}`;
+            }
+        } catch (error) {
+            console.error('更新统计小卡失败:', error);
+        }
+    },
+
+    /**
+     * 更新消费洞察
+     */
+    updateInsight() {
+        try {
+            const year = this.state.selectedYear;
+            const month = this.state.selectedMonth;
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const monthStart = `${year}-${String(month).padStart(2, '0')}-01`;
+            const monthEnd = `${year}-${String(month).padStart(2, '0')}-${daysInMonth}`;
+
+            // 上月日期范围
+            const lastMonth = month === 1 ? 12 : month - 1;
+            const lastYear = month === 1 ? year - 1 : year;
+            const lastDaysInMonth = new Date(lastYear, lastMonth, 0).getDate();
+            const lastMonthStart = `${lastYear}-${String(lastMonth).padStart(2, '0')}-01`;
+            const lastMonthEnd = `${lastYear}-${String(lastMonth).padStart(2, '0')}-${lastDaysInMonth}`;
+
+            // 本月支出记录
+            const thisMonthRecords = Storage.filter({ startDate: monthStart, endDate: monthEnd, type: 'expense' });
+            const lastMonthRecords = Storage.filter({ startDate: lastMonthStart, endDate: lastMonthEnd, type: 'expense' });
+
+            // 按分类统计本月支出
+            const thisCategoryStats = {};
+            thisMonthRecords.forEach(r => {
+                if (!thisCategoryStats[r.category]) thisCategoryStats[r.category] = 0;
+                thisCategoryStats[r.category] = Utils.add(thisCategoryStats[r.category], parseFloat(r.amount));
+            });
+
+            // 按分类统计上月支出
+            const lastCategoryStats = {};
+            lastMonthRecords.forEach(r => {
+                if (!lastCategoryStats[r.category]) lastCategoryStats[r.category] = 0;
+                lastCategoryStats[r.category] = Utils.add(lastCategoryStats[r.category], parseFloat(r.amount));
+            });
+
+            // 排序获取前两名
+            const sorted = Object.entries(thisCategoryStats).sort((a, b) => b[1] - a[1]);
+
+            const insightText = document.getElementById('insightText');
+            if (!insightText) return;
+
+            if (sorted.length === 0) {
+                insightText.textContent = '暂无消费数据，快去记一笔吧！';
+                return;
+            }
+
+            const top1 = sorted[0]; // [categoryId, amount]
+            const cat1 = Utils.getCategoryById(top1[0], 'expense');
+
+            // 计算与上月对比
+            const lastAmount1 = lastCategoryStats[top1[0]] || 0;
+            const diffPercent1 = lastAmount1 > 0 ? ((top1[1] - lastAmount1) / lastAmount1 * 100) : 0;
+
+            let text = `${cat1.name} 支出 ${Utils.formatAmount(top1[1])}`;
+
+            if (lastAmount1 > 0) {
+                text += `，较上月${diffPercent1 >= 0 ? '增' : '减'} ${Math.abs(diffPercent1).toFixed(0)}%`;
+            }
+
+            // 如果有第二名
+            if (sorted.length >= 2) {
+                const top2 = sorted[1];
+                const cat2 = Utils.getCategoryById(top2[0], 'expense');
+                const lastAmount2 = lastCategoryStats[top2[0]] || 0;
+
+                // 判断趋势
+                let trend = '持平';
+                if (lastAmount2 > 0) {
+                    const diff2 = top2[1] - lastAmount2;
+                    if (diff2 > 0) trend = '上升';
+                    else if (diff2 < 0) trend = '下降';
+                }
+
+                text += `；${cat2.name} 支出持续${trend}`;
+            }
+
+            insightText.textContent = text;
+        } catch (error) {
+            console.error('更新消费洞察失败:', error);
+        }
+    },
+
+    /**
+     * 渲染消费日历热力图
+     */
+    renderCalendarHeatmap() {
+        try {
+            const year = this.state.selectedYear;
+            const month = this.state.selectedMonth;
+            const calendarGrid = document.getElementById('calendarGrid');
+            if (!calendarGrid) return;
+
+            // 获取当月第一天是星期几（0=周日，调整为周一开始）
+            const firstDay = new Date(year, month - 1, 1).getDay();
+            const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1; // 调整为周一开始
+
+            // 获取当月天数
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            // 获取每日支出数据
+            const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+            const endDate = `${year}-${String(month).padStart(2, '0')}-${daysInMonth}`;
+            const dailyStats = Storage.getStatsByDate({ startDate, endDate });
+
+            // 生成日历格子
+            let html = '';
+
+            // 前面的空白格子
+            for (let i = 0; i < adjustedFirstDay; i++) {
+                html += '<div class="calendar-day empty"></div>';
+            }
+
+            // 日期格子
+            const now = new Date();
+            const today = now.getDate();
+            const isCurrentMonth = year === now.getFullYear() && month === now.getMonth() + 1;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const expense = dailyStats[dateStr] ? dailyStats[dateStr].expense : 0;
+
+                // 根据支出金额确定色阶
+                let level = 0;
+                if (expense > 0 && expense <= 100) level = 1;
+                else if (expense > 100 && expense <= 500) level = 2;
+                else if (expense > 500) level = 3;
+
+                const isToday = isCurrentMonth && day === today;
+                const todayClass = isToday ? ' today' : '';
+
+                html += `<div class="calendar-day level-${level}${todayClass}" title="${day}日：支出 ${Utils.formatAmount(expense)}">
+                    <span class="day-number">${day}</span>
+                </div>`;
+            }
+
+            calendarGrid.innerHTML = html;
+        } catch (error) {
+            console.error('渲染消费日历失败:', error);
+        }
+    },
+
+    /**
      * 渲染记录列表
      */
     renderRecords() {
@@ -923,7 +1176,8 @@ const App = {
                 <div class="record-date-group">
                     <span>${dateDisplay}</span>
                     <span class="date-total">
-                        收: ${Utils.formatAmount(group.income)} | 支: ${Utils.formatAmount(group.expense)}
+                        <span class="date-expense">支: ${Utils.formatAmount(group.expense)}</span>
+                        <span class="date-income">收: ${Utils.formatAmount(group.income)}</span>
                     </span>
                 </div>
             `;
@@ -942,9 +1196,9 @@ const App = {
                         <div class="record-info">
                             <div class="record-category">${category.name}</div>
                             <div class="record-note">${record.note || '无备注'}</div>
-                            <div class="record-account ${record.account}">
-                                <i class="fas fa-circle" style="font-size: 6px;"></i>
-                                ${accountName}
+                            <div class="record-tags">
+                                <span class="record-tag">${accountName}</span>
+                                <span class="record-tag">${category.name}</span>
                             </div>
                         </div>
                         <div class="record-right">
