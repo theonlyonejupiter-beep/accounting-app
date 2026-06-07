@@ -42,10 +42,11 @@
             // 背景渐变
             const gradient = ctx.createLinearGradient(0, 0, size, size);
             gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(1, '#764ba2');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#f093fb');
 
             // 绘制圆角矩形背景
-            const radius = 100 * scale;
+            const radius = 120 * scale;
             ctx.beginPath();
             ctx.moveTo(radius, 0);
             ctx.lineTo(size - radius, 0);
@@ -60,30 +61,86 @@
             ctx.fillStyle = gradient;
             ctx.fill();
 
+            // 高光层
+            const highlightGradient = ctx.createLinearGradient(0, 0, size, size);
+            highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+            highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = highlightGradient;
+            ctx.fillRect(0, 0, size, size / 2);
+
             // 钱袋主体
-            ctx.beginPath();
             const centerX = size / 2;
-            const centerY = size / 2;
-            const bagRadius = 140 * scale;
-            ctx.arc(centerX, centerY - 20 * scale, bagRadius, 0, Math.PI * 2);
+            const centerY = size / 2 + 20 * scale;
+            const bagRadiusX = 130 * scale;
+            const bagRadiusY = 120 * scale;
+
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, bagRadiusX, bagRadiusY, 0, 0, Math.PI * 2);
             ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
             ctx.fill();
 
             // 钱袋开口
-            const openWidth = 130 * scale;
+            const openWidth = 100 * scale;
             const openHeight = 60 * scale;
-            const openY = centerY - 70 * scale;
+            const openY = centerY - 120 * scale;
             ctx.beginPath();
-            ctx.roundRect(centerX - openWidth, openY - openHeight/2, openWidth * 2, openHeight, 10 * scale);
+            ctx.roundRect(centerX - openWidth, openY, openWidth * 2, openHeight, 30 * scale);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // 钱袋装饰线
+            ctx.beginPath();
+            ctx.moveTo(centerX - 60 * scale, openY + 30 * scale);
+            ctx.lineTo(centerX + 60 * scale, openY + 30 * scale);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 4 * scale;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // 钱袋绳结
+            ctx.beginPath();
+            ctx.arc(centerX, openY, 15 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(centerX, openY, 8 * scale, 0, Math.PI * 2);
             ctx.fillStyle = gradient;
             ctx.fill();
 
             // ¥ 符号
             ctx.fillStyle = 'white';
-            ctx.font = `bold ${120 * scale}px Arial`;
+            ctx.font = `bold ${100 * scale}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('¥', centerX, centerY + 30 * scale);
+
+            // 装饰元素
+            ctx.beginPath();
+            ctx.arc(120 * scale, 120 * scale, 20 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(392 * scale, 120 * scale, 15 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(150 * scale, 400 * scale, 12 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fill();
+
+            // 高光点
+            ctx.beginPath();
+            ctx.arc(200 * scale, 200 * scale, 8 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(320 * scale, 180 * scale, 5 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.fill();
         }
 
         function downloadIcon(canvasId, filename) {
