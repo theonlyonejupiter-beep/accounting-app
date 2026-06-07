@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="记账本">
+    <meta name="description" content="简洁易用的个人记账本，支持微信和支付宝账单导入">
+    <title>💰 我的记账本</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="header-left">
+            <h1><i class="fas fa-wallet"></i> 我的记账本</h1>
+        </div>
+        <div class="header-right">
+            <button class="btn-theme" id="btnTheme" title="切换主题">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="btn-budget" id="btnBudget" title="预算管理">
+                <i class="fas fa-chart-line"></i> 预算
+            </button>
+            <button class="btn-export" id="btnExport" title="导出数据">
+                <i class="fas fa-download"></i> 导出
+            </button>
+            <button class="btn-clear" id="btnClear" title="清空数据">
+                <i class="fas fa-trash-alt"></i> 清空
+            </button>
+            <button class="btn-import" id="btnImport" title="导入账单">
+                <i class="fas fa-file-import"></i> 导入账单
+            </button>
+            <button class="btn-add" id="btnAdd">
+                <i class="fas fa-plus"></i> 记一笔
+            </button>
+        </div>
+    </header>
+
+    <!-- 预算进度条 -->
+    <div class="budget-bar-container" id="budgetBarContainer" style="display: none;">
+        <div class="budget-bar-header">
+            <span class="budget-title"><i class="fas fa-bullseye"></i> 本月预算</span>
+            <span class="budget-info" id="budgetInfo">已用 ¥0 / 预算 ¥0</span>
+        </div>
+        <div class="budget-progress-bar">
+            <div class="budget-progress" id="budgetProgress" style="width: 0%"></div>
+        </div>
+        <div class="budget-remaining" id="budgetRemaining">剩余 ¥0.00</div>
+    </div>
+
+    <!-- 月份选择器 -->
+    <div class="month-selector">
+        <button class="month-nav-btn" id="prevMonth">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="month-display" id="monthDisplay">
+            <span class="month-text" id="currentMonth">2026年6月</span>
+            <button class="btn-today" id="btnToday">回到本月</button>
+        </div>
+        <button class="month-nav-btn" id="nextMonth">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="account-cards">
+        <div class="account-card total">
+            <div class="card-header">
+                <span class="card-title" id="totalTitle">本月总计</span>
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="card-stats">
+                <div class="stat">
+                    <span class="stat-label">收入</span>
+                    <span class="stat-value income" id="monthIncome">¥0.00</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">支出</span>
+                    <span class="stat-value expense" id="monthExpense">¥0.00</span>
+                </div>
+            </div>
+        </div>
+        <div class="account-card wechat">
+            <div class="card-header">
+                <span class="card-title">微信</span>
+                <i class="fab fa-weixin"></i>
+            </div>
+            <div class="card-stats">
+                <div class="stat">
+                    <span class="stat-label">收入</span>
+                    <span class="stat-value income" id="wechatIncome">¥0.00</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">支出</span>
+                    <span class="stat-value expense" id="wechatExpense">¥0.00</span>
+                </div>
+            </div>
+        </div>
+        <div class="account-card alipay">
+            <div class="card-header">
+                <span class="card-title">支付宝</span>
+                <i class="fab fa-alipay"></i>
+            </div>
+            <div class="card-stats">
+                <div class="stat">
+                    <span class="stat-label">收入</span>
+                    <span class="stat-value income" id="alipayIncome">¥0.00</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">支出</span>
+                    <span class="stat-value expense" id="alipayExpense">¥0.00</span>
+                </div>
+            </div>
+        </div>
+        <div class="account-card cash">
+            <div class="card-header">
+                <span class="card-title">现金</span>
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="card-stats">
+                <div class="stat">
+                    <span class="stat-label">收入</span>
+                    <span class="stat-value income" id="cashIncome">¥0.00</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">支出</span>
+                    <span class="stat-value expense" id="cashExpense">¥0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查询筛选区域 -->
+    <div class="filter-section">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label>日期范围</label>
+                <div class="date-range">
+                    <input type="date" id="dateStart">
+                    <span>至</span>
+                    <input type="date" id="dateEnd">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>快捷选择</label>
+                <div class="quick-dates">
+                    <button class="quick-date-btn" data-range="today">今天</button>
+                    <button class="quick-date-btn" data-range="week">本周</button>
+                    <button class="quick-date-btn active" data-range="month">本月</button>
+                    <button class="quick-date-btn" data-range="year">本年</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>账户</label>
+                <div class="account-filters">
+                    <button class="account-filter-btn active" data-account="all">全部</button>
+                    <button class="account-filter-btn" data-account="wechat">
+                        <i class="fab fa-weixin"></i> 微信
+                    </button>
+                    <button class="account-filter-btn" data-account="alipay">
+                        <i class="fab fa-alipay"></i> 支付宝
+                    </button>
+                    <button class="account-filter-btn" data-account="cash">
+                        <i class="fas fa-money-bill"></i> 现金
+                    </button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>类型</label>
+                <div class="type-filters">
+                    <button class="type-filter-btn active" data-type="all">全部</button>
+                    <button class="type-filter-btn" data-type="income">
+                        <i class="fas fa-arrow-down"></i> 收入
+                    </button>
+                    <button class="type-filter-btn" data-type="expense">
+                        <i class="fas fa-arrow-up"></i> 支出
+                    </button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>搜索</label>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="搜索交易对方、备注...">
+                    <button class="btn-clear-search" id="btnClearSearch" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="btn-reset-filter" id="btnResetFilter">
+                <i class="fas fa-undo"></i> 重置
+            </button>
+        </div>
+    </div>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 图表统计区域 -->
+        <div class="charts-section">
+            <div class="charts-grid">
+                <!-- 支出分类饼图 -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> 支出分类</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="expensePieChart"></canvas>
+                    </div>
+                    <div class="chart-legend" id="expenseLegend"></div>
+                </div>
+
+                <!-- 收入分类饼图 -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> 收入分类</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="incomePieChart"></canvas>
+                    </div>
+                    <div class="chart-legend" id="incomeLegend"></div>
+                </div>
+
+                <!-- 每日收支趋势 -->
+                <div class="chart-card chart-wide">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> 每日收支趋势</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="dailyTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 记录列表 -->
+        <div class="records-section">
+            <div class="section-header">
+                <h2><i class="fas fa-list"></i> 账单明细</h2>
+                <div class="record-summary">
+                    <span>共 <strong id="recordCount">0</strong> 条记录</span>
+                    <span class="summary-divider">|</span>
+                    <span>收入: <strong class="income" id="filterIncome">¥0.00</strong></span>
+                    <span class="summary-divider">|</span>
+                    <span>支出: <strong class="expense" id="filterExpense">¥0.00</strong></span>
+                </div>
+            </div>
+            <div class="records-list" id="recordsList">
+                <div class="empty-state">
+                    <i class="fas fa-receipt"></i>
+                    <p>还没有记录</p>
+                    <p class="empty-hint">点击"记一笔"或"导入账单"开始</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 记账弹窗 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">新建记账</h3>
+                <button class="btn-close" id="btnClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- 语音记账 -->
+                <div class="voice-section">
+                    <button class="btn-voice" id="btnVoice" title="语音记账">
+                        <i class="fas fa-microphone"></i>
+                        <span>点击说话</span>
+                    </button>
+                    <div class="voice-status" id="voiceStatus"></div>
+                </div>
+
+                <!-- 常用模板 -->
+                <div class="template-section">
+                    <div class="template-header">
+                        <span>常用记录</span>
+                        <button class="btn-add-template" id="btnAddTemplate" title="保存当前为模板">
+                            <i class="fas fa-plus"></i> 存为模板
+                        </button>
+                    </div>
+                    <div class="template-list" id="templateList">
+                        <!-- 模板将通过JS动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 类型切换 -->
+                <div class="type-switch">
+                    <button class="type-btn active" data-type="expense">
+                        <i class="fas fa-minus-circle"></i> 支出
+                    </button>
+                    <button class="type-btn" data-type="income">
+                        <i class="fas fa-plus-circle"></i> 收入
+                    </button>
+                </div>
+
+                <!-- 金额输入 -->
+                <div class="form-group">
+                    <label>金额 <span class="required">*</span></label>
+                    <div class="amount-input">
+                        <span class="currency">¥</span>
+                        <input type="number" id="inputAmount" placeholder="0.00" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+
+                <!-- 账户选择 -->
+                <div class="form-group">
+                    <label>账户 <span class="required">*</span></label>
+                    <div class="account-select">
+                        <button class="account-btn active" data-account="wechat">
+                            <i class="fab fa-weixin"></i> 微信
+                        </button>
+                        <button class="account-btn" data-account="alipay">
+                            <i class="fab fa-alipay"></i> 支付宝
+                        </button>
+                        <button class="account-btn" data-account="cash">
+                            <i class="fas fa-money-bill"></i> 现金
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 分类选择 -->
+                <div class="form-group">
+                    <label>分类 <span class="required">*</span></label>
+                    <div class="category-grid" id="categoryGrid"></div>
+                </div>
+
+                <!-- 日期选择 -->
+                <div class="form-group">
+                    <label>日期 <span class="required">*</span></label>
+                    <input type="date" id="inputDate" required>
+                </div>
+
+                <!-- 备注输入 -->
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" id="inputNote" placeholder="添加备注（可选）">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnCancel">取消</button>
+                <button class="btn-save" id="btnSave">
+                    <i class="fas fa-check"></i> 保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导入账单弹窗 -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal modal-import">
+            <div class="modal-header">
+                <h3>导入账单</h3>
+                <button class="btn-close" id="btnImportClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="import-tabs">
+                    <button class="import-tab active" data-platform="wechat">
+                        <i class="fab fa-weixin"></i> 微信账单
+                    </button>
+                    <button class="import-tab" data-platform="alipay">
+                        <i class="fab fa-alipay"></i> 支付宝账单
+                    </button>
+                </div>
+
+                <div class="import-instructions">
+                    <h4>如何获取账单文件？</h4>
+                    <div class="instruction-content" id="instructionContent">
+                        <!-- 微信账单获取说明 -->
+                        <div class="instruction active" id="wechatInstruction">
+                            <ol>
+                                <li>打开微信，进入「我」→「服务」→「钱包」</li>
+                                <li>点击右上角「账单」</li>
+                                <li>点击右上角「...」→「下载账单」</li>
+                                <li>选择「用于个人对账」</li>
+                                <li>设置时间范围，输入邮箱接收账单</li>
+                                <li>在邮箱中下载Excel文件（.xlsx），上传即可</li>
+                            </ol>
+                        </div>
+                        <!-- 支付宝账单获取说明 -->
+                        <div class="instruction" id="alipayInstruction">
+                            <ol>
+                                <li>打开支付宝APP，进入「我的」→「账单」</li>
+                                <li>点击右上角「...」→「开具交易流水证明」</li>
+                                <li>或访问：支付宝网页版 → 交易记录</li>
+                                <li>筛选时间范围，点击「下载账单」</li>
+                                <li>选择Excel格式下载</li>
+                                <li>上传下载的Excel文件即可</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="import-upload">
+                    <div class="upload-area" id="uploadArea">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>拖拽文件到此处或点击上传</p>
+                        <span class="upload-hint">支持 Excel(.xlsx) 和 CSV 格式</span>
+                        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden>
+                    </div>
+                    <div class="upload-preview" id="uploadPreview" style="display:none;">
+                        <i class="fas fa-file-csv"></i>
+                        <span id="fileName">filename.csv</span>
+                        <button class="btn-remove-file" id="btnRemoveFile">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="import-preview" id="importPreview" style="display:none;">
+                    <h4>预览导入数据</h4>
+                    <div class="preview-summary">
+                        <span>共 <strong id="previewCount">0</strong> 条记录</span>
+                        <span>支出: <strong class="expense" id="previewExpense">¥0.00</strong></span>
+                        <span>收入: <strong class="income" id="previewIncome">¥0.00</strong></span>
+                    </div>
+                    <div class="preview-table-wrapper">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>交易对方</th>
+                                    <th>商品说明</th>
+                                    <th>金额</th>
+                                    <th>类型</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnImportCancel">取消</button>
+                <button class="btn-import-confirm" id="btnImportConfirm" disabled>
+                    <i class="fas fa-file-import"></i> 确认导入
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+                <button class="btn-close" id="btnDeleteClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="delete-message">确定要删除这条记录吗？</p>
+                <p class="delete-warning">此操作无法撤销</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnDeleteCancel">取消</button>
+                <button class="btn-delete" id="btnDeleteConfirm">
+                    <i class="fas fa-trash"></i> 删除
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 清空数据确认弹窗 -->
+    <div class="modal-overlay" id="clearModal">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3>清空所有数据</h3>
+                <button class="btn-close" id="btnClearClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="delete-message">确定要清空所有记账数据吗？</p>
+                <p class="delete-warning">⚠️ 此操作将删除所有记录，无法撤销！</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnClearCancel">取消</button>
+                <button class="btn-delete" id="btnClearConfirm">
+                    <i class="fas fa-trash-alt"></i> 确认清空
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预算管理弹窗 -->
+    <div class="modal-overlay" id="budgetModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-line"></i> 预算管理</h3>
+                <button class="btn-close" id="btnBudgetClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="budget-form">
+                    <div class="form-group">
+                        <label>月度预算金额</label>
+                        <div class="amount-input">
+                            <span class="currency">¥</span>
+                            <input type="number" id="inputBudget" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                        <p class="form-hint">设置本月的支出预算上限</p>
+                    </div>
+
+                    <div class="budget-presets">
+                        <label>快捷设置</label>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" data-amount="1000">¥1,000</button>
+                            <button class="preset-btn" data-amount="2000">¥2,000</button>
+                            <button class="preset-btn" data-amount="3000">¥3,000</button>
+                            <button class="preset-btn" data-amount="5000">¥5,000</button>
+                            <button class="preset-btn" data-amount="8000">¥8,000</button>
+                            <button class="preset-btn" data-amount="10000">¥10,000</button>
+                        </div>
+                    </div>
+
+                    <div class="budget-status" id="budgetStatus">
+                        <div class="status-item">
+                            <span class="status-label">本月支出</span>
+                            <span class="status-value expense" id="budgetSpent">¥0.00</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">预算金额</span>
+                            <span class="status-value" id="budgetAmount">¥0.00</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">剩余预算</span>
+                            <span class="status-value" id="budgetLeft">¥0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnBudgetCancel">取消</button>
+                <button class="btn-save" id="btnBudgetSave">
+                    <i class="fas fa-check"></i> 保存预算
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出数据弹窗 -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h3><i class="fas fa-download"></i> 导出数据</h3>
+                <button class="btn-close" id="btnExportClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <div class="export-option" id="exportCSV">
+                        <i class="fas fa-file-csv"></i>
+                        <div class="option-info">
+                            <h4>导出为CSV</h4>
+                            <p>可在Excel中打开编辑</p>
+                        </div>
+                    </div>
+                    <div class="export-option" id="exportJSON">
+                        <i class="fas fa-file-code"></i>
+                        <div class="option-info">
+                            <h4>导出为JSON</h4>
+                            <p>用于数据备份和恢复</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnExportCancel">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">操作成功</span>
+    </div>
+
+    <script src="js/xlsx.full.min.js"></script>
+    <script src="js/chart.umd.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/import.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/budget.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/voice.js"></script>
+    <script src="js/template.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- PWA Service Worker 注册 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker 注册失败:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
