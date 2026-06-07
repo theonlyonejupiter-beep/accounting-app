@@ -3890,19 +3890,6 @@ input[type="text"]:focus {
     .modal {
         max-height: -webkit-fill-available;
     }
-
-    /* iOS弹性滚动修复 */
-    body {
-        overflow: hidden;
-        position: fixed;
-        width: 100%;
-    }
-
-    .main-content {
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        height: calc(100vh - 200px);
-    }
 }
 
 /* PWA安装提示横幅 */

@@ -1376,16 +1376,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     if (isMobile) {
-        // 防止双击缩放
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-
         // iOS 输入框焦点处理
         if (isIOS) {
             // 输入框获得焦点时，确保可见
@@ -1406,18 +1396,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
-
-        // 优化触摸滚动
-        document.addEventListener('touchmove', function(e) {
-            // 允许在可滚动区域内的滚动
-            const scrollable = e.target.closest('.records-list, .preview-table-wrapper, .modal-body, .main-content');
-            if (!scrollable) {
-                // 如果不在可滚动区域，阻止默认行为（防止弹性滚动）
-                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                }
-            }
-        }, { passive: false });
 
         console.log('移动端优化已启用');
     }
