@@ -42,6 +42,7 @@ const App = {
             this.initDateRange();
             this.updateMonthDisplay();
             this.renderCategories();
+            this.initTabBar();
             this.refresh();
 
             // 初始化导入模块
@@ -95,6 +96,98 @@ const App = {
             Utils.showToast('所有数据已清空');
         } catch (error) {
             console.error('清空数据失败:', error);
+        }
+    },
+
+    /**
+     * 初始化底部导航栏
+     */
+    initTabBar() {
+        try {
+            const tabItems = document.querySelectorAll('.tab-item');
+            const tabPages = document.querySelectorAll('.tab-page');
+
+            tabItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const tabName = item.dataset.tab;
+
+                    // 更新Tab状态
+                    tabItems.forEach(t => t.classList.remove('active'));
+                    item.classList.add('active');
+
+                    // 更新页面显示
+                    tabPages.forEach(page => page.classList.remove('active'));
+                    const targetPage = document.getElementById(`page-${tabName}`);
+                    if (targetPage) {
+                        targetPage.classList.add('active');
+                    }
+
+                    // 切换到统计页面时刷新图表
+                    if (tabName === 'stats') {
+                        setTimeout(() => {
+                            ChartModule.update();
+                        }, 100);
+                    }
+
+                    // 切换到账单页面时刷新记录
+                    if (tabName === 'bills') {
+                        this.renderRecords();
+                        this.renderCalendarHeatmap();
+                    }
+
+                    // 切换到首页时刷新统计
+                    if (tabName === 'home') {
+                        this.updateSummary();
+                        this.updateMiniStats();
+                        this.updateInsight();
+                    }
+                });
+            });
+
+            // "我的"页面菜单事件
+            this.bindMineMenuEvents();
+
+            console.log('底部导航栏初始化完成');
+        } catch (error) {
+            console.error('底部导航栏初始化失败:', error);
+        }
+    },
+
+    /**
+     * 绑定快捷功能事件
+     */
+    bindMineMenuEvents() {
+        // 导入账单
+        const actionImport = document.getElementById('actionImport');
+        if (actionImport) {
+            actionImport.addEventListener('click', () => {
+                document.getElementById('importModal').classList.add('active');
+            });
+        }
+
+        // 导出数据
+        const actionExport = document.getElementById('actionExport');
+        if (actionExport) {
+            actionExport.addEventListener('click', () => {
+                document.getElementById('exportModal').classList.add('active');
+            });
+        }
+
+        // 预算管理
+        const actionBudget = document.getElementById('actionBudget');
+        if (actionBudget) {
+            actionBudget.addEventListener('click', () => {
+                BudgetModule.updateModalDisplay();
+                document.getElementById('budgetModal').classList.add('active');
+            });
+        }
+
+        // 主题切换
+        const actionTheme = document.getElementById('actionTheme');
+        if (actionTheme) {
+            actionTheme.addEventListener('click', () => {
+                ThemeModule.toggle();
+            });
         }
     },
 

@@ -56,13 +56,15 @@ body {
 .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 16px 24px;
+    padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: var(--shadow);
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -755,6 +757,91 @@ body {
     transform: translateY(0);
 }
 
+/* ========== Tab页面系统 ========== */
+.tab-pages {
+    padding-top: 60px;
+    padding-bottom: 70px;
+    min-height: 100vh;
+}
+
+.tab-page {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ========== 底部导航栏 ========== */
+.tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 60px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    border-top: 1px solid var(--border-color);
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+.tab-item.active {
+    color: var(--primary-color);
+}
+
+.tab-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 0 0 3px 3px;
+}
+
+.tab-item i {
+    font-size: 20px;
+    margin-bottom: 2px;
+    transition: transform 0.3s ease;
+}
+
+.tab-item.active i {
+    transform: scale(1.1);
+}
+
+.tab-item span {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.tab-item:active {
+    transform: scale(0.95);
+}
+
 /* ========== 主内容区域 ========== */
 .main-content {
     padding: 0 24px 24px;
@@ -1206,63 +1293,155 @@ body {
     font-size: 13px;
 }
 
-/* ========== 消费日历热力图 ========== */
-.calendar-heatmap {
+/* ========== 快捷功能区域 ========== */
+.quick-actions {
+    margin: 16px;
     background: var(--card-bg);
     border-radius: 16px;
     padding: 20px;
+    box-shadow: var(--shadow);
+    animation: fadeInUp 0.6s ease-out 1.3s;
+    animation-fill-mode: both;
+}
+
+.quick-actions-header {
     margin-bottom: 16px;
+}
+
+.quick-actions-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.quick-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 8px;
+    background: #f8fafc;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quick-action-item:hover {
+    background: #eef2ff;
+    transform: translateY(-2px);
+}
+
+.quick-action-item:active {
+    transform: translateY(0);
+}
+
+.quick-action-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+}
+
+.quick-action-item:nth-child(2) .quick-action-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.quick-action-item:nth-child(3) .quick-action-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.quick-action-item:nth-child(4) .quick-action-icon {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.quick-action-item span {
+    font-size: 12px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* 深色模式 */
+[data-theme="dark"] .quick-action-item {
+    background: #1e293b;
+}
+
+[data-theme="dark"] .quick-action-item:hover {
+    background: #334155;
+}
+
+[data-theme="dark"] .tab-bar {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+/* ========== 消费日历热力图 ========== */
+.calendar-heatmap {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
     box-shadow: var(--shadow);
     animation: fadeInUp 0.6s ease-out 1.2s;
     animation-fill-mode: both;
 }
 
 .calendar-header {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .calendar-header h3 {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-primary);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .calendar-header h3 i {
     color: var(--primary-color);
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
-    margin-bottom: 8px;
+    gap: 4px;
+    margin-bottom: 6px;
 }
 
 .calendar-weekdays span {
     text-align: center;
-    font-size: 12px;
+    font-size: 10px;
     color: var(--text-secondary);
     font-weight: 500;
-    padding: 4px 0;
+    padding: 2px 0;
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    gap: 4px;
 }
 
 .calendar-day {
     aspect-ratio: 1;
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
@@ -1315,9 +1494,9 @@ body {
     transform: translateX(-50%);
     background: var(--text-primary);
     color: var(--card-bg);
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
@@ -1329,7 +1508,7 @@ body {
 .calendar-day:hover::after {
     opacity: 1;
     visibility: visible;
-    bottom: calc(100% + 6px);
+    bottom: calc(100% + 4px);
 }
 
 /* 深色模式 */
@@ -2903,6 +3082,57 @@ input[type="text"]:focus {
     }
 }
 
+/* 移动端Tab栏适配 */
+@media (max-width: 768px) {
+    .header {
+        padding: 10px 12px;
+    }
+
+    .header h1 {
+        font-size: 16px;
+    }
+
+    .tab-pages {
+        padding-top: 50px;
+        padding-bottom: 65px;
+    }
+
+    .tab-bar {
+        height: 55px;
+    }
+
+    .tab-item i {
+        font-size: 18px;
+    }
+
+    .tab-item span {
+        font-size: 10px;
+    }
+
+    .quick-actions {
+        margin: 12px;
+        padding: 16px;
+    }
+
+    .quick-actions-grid {
+        gap: 8px;
+    }
+
+    .quick-action-item {
+        padding: 12px 4px;
+    }
+
+    .quick-action-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .quick-action-item span {
+        font-size: 11px;
+    }
+}
+
 @media (max-width: 768px) {
     .header {
         padding: 12px 16px;
@@ -3472,17 +3702,34 @@ input[type="text"]:focus {
 
     /* 日历热力图优化 */
     .calendar-heatmap {
-        padding: 16px;
-        margin-bottom: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+
+    .calendar-header {
+        margin-bottom: 8px;
+    }
+
+    .calendar-header h3 {
+        font-size: 12px;
+    }
+
+    .calendar-weekdays {
+        gap: 3px;
+        margin-bottom: 4px;
+    }
+
+    .calendar-weekdays span {
+        font-size: 9px;
     }
 
     .calendar-grid {
-        gap: 4px;
+        gap: 3px;
     }
 
     .calendar-day {
-        font-size: 11px;
-        border-radius: 6px;
+        font-size: 9px;
+        border-radius: 5px;
     }
 
     /* 记录标签优化 */

@@ -22,309 +22,352 @@
             <h1><i class="fas fa-wallet"></i> 我的记账本</h1>
         </div>
         <div class="header-right">
-            <button class="btn-theme" id="btnTheme" title="切换主题">
-                <i class="fas fa-moon"></i>
-            </button>
-            <button class="btn-budget" id="btnBudget" title="预算管理">
-                <i class="fas fa-chart-line"></i> 预算
-            </button>
-            <button class="btn-export" id="btnExport" title="导出数据">
-                <i class="fas fa-download"></i> 导出
-            </button>
-            <button class="btn-clear" id="btnClear" title="清空数据">
-                <i class="fas fa-trash-alt"></i> 清空
-            </button>
-            <button class="btn-import" id="btnImport" title="导入账单">
-                <i class="fas fa-file-import"></i> 导入账单
-            </button>
             <button class="btn-add" id="btnAdd">
                 <i class="fas fa-plus"></i> 记一笔
             </button>
         </div>
     </header>
 
-    <!-- 预算进度条 -->
-    <div class="budget-bar-container" id="budgetBarContainer" style="display: none;">
-        <div class="budget-bar-header">
-            <span class="budget-title"><i class="fas fa-bullseye"></i> 本月预算</span>
-            <span class="budget-info" id="budgetInfo">已用 ¥0 / 预算 ¥0</span>
-        </div>
-        <div class="budget-progress-bar">
-            <div class="budget-progress" id="budgetProgress" style="width: 0%"></div>
-        </div>
-        <div class="budget-remaining" id="budgetRemaining">剩余 ¥0.00</div>
-    </div>
+    <!-- 页面容器 -->
+    <div class="tab-pages">
+        <!-- Tab 1: 首页（概览） -->
+        <div class="tab-page active" id="page-home">
+            <!-- 预算进度条 -->
+            <div class="budget-bar-container" id="budgetBarContainer" style="display: none;">
+                <div class="budget-bar-header">
+                    <span class="budget-title"><i class="fas fa-bullseye"></i> 本月预算</span>
+                    <span class="budget-info" id="budgetInfo">已用 ¥0 / 预算 ¥0</span>
+                </div>
+                <div class="budget-progress-bar">
+                    <div class="budget-progress" id="budgetProgress" style="width: 0%"></div>
+                </div>
+                <div class="budget-remaining" id="budgetRemaining">剩余 ¥0.00</div>
+            </div>
 
-    <!-- 月份选择器 -->
-    <div class="month-selector">
-        <button class="month-nav-btn" id="prevMonth">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="month-display" id="monthDisplay">
-            <span class="month-text" id="currentMonth">2026年6月</span>
-            <button class="btn-today" id="btnToday">回到本月</button>
-        </div>
-        <button class="month-nav-btn" id="nextMonth">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-    </div>
+            <!-- 月份选择器 -->
+            <div class="month-selector">
+                <button class="month-nav-btn" id="prevMonth">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="month-display" id="monthDisplay">
+                    <span class="month-text" id="currentMonth">2026年6月</span>
+                    <button class="btn-today" id="btnToday">回到本月</button>
+                </div>
+                <button class="month-nav-btn" id="nextMonth">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
 
-    <!-- 统计卡片 -->
-    <div class="account-cards">
-        <div class="account-card total">
-            <div class="card-header">
-                <span class="card-title" id="totalTitle">本月总计</span>
-                <i class="fas fa-chart-pie"></i>
-            </div>
-            <div class="card-stats">
-                <div class="stat">
-                    <span class="stat-label">收入</span>
-                    <span class="stat-value income" id="monthIncome">¥0.00</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">支出</span>
-                    <span class="stat-value expense" id="monthExpense">¥0.00</span>
-                </div>
-            </div>
-        </div>
-        <div class="account-card wechat">
-            <div class="card-header">
-                <span class="card-title">微信</span>
-                <i class="fab fa-weixin"></i>
-            </div>
-            <div class="card-stats">
-                <div class="stat">
-                    <span class="stat-label">收入</span>
-                    <span class="stat-value income" id="wechatIncome">¥0.00</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">支出</span>
-                    <span class="stat-value expense" id="wechatExpense">¥0.00</span>
-                </div>
-            </div>
-        </div>
-        <div class="account-card alipay">
-            <div class="card-header">
-                <span class="card-title">支付宝</span>
-                <i class="fab fa-alipay"></i>
-            </div>
-            <div class="card-stats">
-                <div class="stat">
-                    <span class="stat-label">收入</span>
-                    <span class="stat-value income" id="alipayIncome">¥0.00</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">支出</span>
-                    <span class="stat-value expense" id="alipayExpense">¥0.00</span>
-                </div>
-            </div>
-        </div>
-        <div class="account-card cash">
-            <div class="card-header">
-                <span class="card-title">现金</span>
-                <i class="fas fa-money-bill-wave"></i>
-            </div>
-            <div class="card-stats">
-                <div class="stat">
-                    <span class="stat-label">收入</span>
-                    <span class="stat-value income" id="cashIncome">¥0.00</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">支出</span>
-                    <span class="stat-value expense" id="cashExpense">¥0.00</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4格统计小卡 -->
-    <div class="stats-mini-cards" id="statsMiniCards">
-        <div class="mini-card">
-            <div class="mini-card-icon">
-                <i class="fas fa-receipt"></i>
-            </div>
-            <div class="mini-card-info">
-                <span class="mini-card-label">交易笔数</span>
-                <span class="mini-card-value" id="miniTransCount">0</span>
-                <span class="mini-card-diff" id="miniTransCountDiff">--</span>
-            </div>
-        </div>
-        <div class="mini-card">
-            <div class="mini-card-icon">
-                <i class="fas fa-calendar-day"></i>
-            </div>
-            <div class="mini-card-info">
-                <span class="mini-card-label">日均支出</span>
-                <span class="mini-card-value" id="miniDailyExpense">¥0</span>
-                <span class="mini-card-diff" id="miniDailyExpenseDiff">--</span>
-            </div>
-        </div>
-        <div class="mini-card">
-            <div class="mini-card-icon">
-                <i class="fas fa-arrow-up"></i>
-            </div>
-            <div class="mini-card-info">
-                <span class="mini-card-label">最大单笔</span>
-                <span class="mini-card-value" id="miniMaxExpense">¥0</span>
-                <span class="mini-card-diff" id="miniMaxExpenseCategory">--</span>
-            </div>
-        </div>
-        <div class="mini-card">
-            <div class="mini-card-icon">
-                <i class="fas fa-piggy-bank"></i>
-            </div>
-            <div class="mini-card-info">
-                <span class="mini-card-label">结余率</span>
-                <span class="mini-card-value" id="miniBalanceRate">0%</span>
-                <span class="mini-card-diff" id="miniBalanceRateDiff">--</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 消费洞察横条 -->
-    <div class="insight-bar" id="insightBar">
-        <div class="insight-icon">
-            <i class="fas fa-lightbulb"></i>
-        </div>
-        <div class="insight-text" id="insightText">
-            加载中...
-        </div>
-    </div>
-
-    <!-- 查询筛选区域 -->
-    <div class="filter-section">
-        <div class="filter-row">
-            <div class="filter-group">
-                <label>日期范围</label>
-                <div class="date-range">
-                    <input type="date" id="dateStart">
-                    <span>至</span>
-                    <input type="date" id="dateEnd">
-                </div>
-            </div>
-            <div class="filter-group">
-                <label>快捷选择</label>
-                <div class="quick-dates">
-                    <button class="quick-date-btn" data-range="today">今天</button>
-                    <button class="quick-date-btn" data-range="week">本周</button>
-                    <button class="quick-date-btn active" data-range="month">本月</button>
-                    <button class="quick-date-btn" data-range="year">本年</button>
-                </div>
-            </div>
-            <div class="filter-group">
-                <label>账户</label>
-                <div class="account-filters">
-                    <button class="account-filter-btn active" data-account="all">全部</button>
-                    <button class="account-filter-btn" data-account="wechat">
-                        <i class="fab fa-weixin"></i> 微信
-                    </button>
-                    <button class="account-filter-btn" data-account="alipay">
-                        <i class="fab fa-alipay"></i> 支付宝
-                    </button>
-                    <button class="account-filter-btn" data-account="cash">
-                        <i class="fas fa-money-bill"></i> 现金
-                    </button>
-                </div>
-            </div>
-            <div class="filter-group">
-                <label>类型</label>
-                <div class="type-filters">
-                    <button class="type-filter-btn active" data-type="all">全部</button>
-                    <button class="type-filter-btn" data-type="income">
-                        <i class="fas fa-arrow-down"></i> 收入
-                    </button>
-                    <button class="type-filter-btn" data-type="expense">
-                        <i class="fas fa-arrow-up"></i> 支出
-                    </button>
-                </div>
-            </div>
-            <div class="filter-group">
-                <label>搜索</label>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="搜索交易对方、备注...">
-                    <button class="btn-clear-search" id="btnClearSearch" style="display: none;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <button class="btn-reset-filter" id="btnResetFilter">
-                <i class="fas fa-undo"></i> 重置
-            </button>
-        </div>
-    </div>
-
-    <!-- 主内容区域 -->
-    <main class="main-content">
-        <!-- 图表统计区域 -->
-        <div class="charts-section">
-            <div class="charts-grid">
-                <!-- 支出分类排行 -->
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-chart-bar"></i> 支出分类排行</h3>
+            <!-- 统计卡片 -->
+            <div class="account-cards">
+                <div class="account-card total">
+                    <div class="card-header">
+                        <span class="card-title" id="totalTitle">本月总计</span>
+                        <i class="fas fa-chart-pie"></i>
                     </div>
-                    <div class="category-rank-list" id="expenseRankList">
-                        <!-- 动态生成 -->
+                    <div class="card-stats">
+                        <div class="stat">
+                            <span class="stat-label">收入</span>
+                            <span class="stat-value income" id="monthIncome">¥0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">支出</span>
+                            <span class="stat-value expense" id="monthExpense">¥0.00</span>
+                        </div>
                     </div>
                 </div>
-
-                <!-- 预算执行进度 -->
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-tasks"></i> 预算执行进度</h3>
+                <div class="account-card wechat">
+                    <div class="card-header">
+                        <span class="card-title">微信</span>
+                        <i class="fab fa-weixin"></i>
                     </div>
-                    <div class="budget-progress-list" id="budgetProgressList">
-                        <!-- 动态生成 -->
+                    <div class="card-stats">
+                        <div class="stat">
+                            <span class="stat-label">收入</span>
+                            <span class="stat-value income" id="wechatIncome">¥0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">支出</span>
+                            <span class="stat-value expense" id="wechatExpense">¥0.00</span>
+                        </div>
                     </div>
                 </div>
-
-                <!-- 每日收支趋势 -->
-                <div class="chart-card chart-wide">
-                    <div class="chart-header">
-                        <h3><i class="fas fa-chart-line"></i> 每日收支趋势</h3>
+                <div class="account-card alipay">
+                    <div class="card-header">
+                        <span class="card-title">支付宝</span>
+                        <i class="fab fa-alipay"></i>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="dailyTrendChart"></canvas>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <span class="stat-label">收入</span>
+                            <span class="stat-value income" id="alipayIncome">¥0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">支出</span>
+                            <span class="stat-value expense" id="alipayExpense">¥0.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="account-card cash">
+                    <div class="card-header">
+                        <span class="card-title">现金</span>
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat">
+                            <span class="stat-label">收入</span>
+                            <span class="stat-value income" id="cashIncome">¥0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">支出</span>
+                            <span class="stat-value expense" id="cashExpense">¥0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4格统计小卡 -->
+            <div class="stats-mini-cards" id="statsMiniCards">
+                <div class="mini-card">
+                    <div class="mini-card-icon">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="mini-card-info">
+                        <span class="mini-card-label">交易笔数</span>
+                        <span class="mini-card-value" id="miniTransCount">0</span>
+                        <span class="mini-card-diff" id="miniTransCountDiff">--</span>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-card-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="mini-card-info">
+                        <span class="mini-card-label">日均支出</span>
+                        <span class="mini-card-value" id="miniDailyExpense">¥0</span>
+                        <span class="mini-card-diff" id="miniDailyExpenseDiff">--</span>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-card-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                    <div class="mini-card-info">
+                        <span class="mini-card-label">最大单笔</span>
+                        <span class="mini-card-value" id="miniMaxExpense">¥0</span>
+                        <span class="mini-card-diff" id="miniMaxExpenseCategory">--</span>
+                    </div>
+                </div>
+                <div class="mini-card">
+                    <div class="mini-card-icon">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <div class="mini-card-info">
+                        <span class="mini-card-label">结余率</span>
+                        <span class="mini-card-value" id="miniBalanceRate">0%</span>
+                        <span class="mini-card-diff" id="miniBalanceRateDiff">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 消费洞察横条 -->
+            <div class="insight-bar" id="insightBar">
+                <div class="insight-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="insight-text" id="insightText">
+                    加载中...
+                </div>
+            </div>
+
+            <!-- 快捷功能区域 -->
+            <div class="quick-actions">
+                <div class="quick-actions-header">
+                    <h3>快捷功能</h3>
+                </div>
+                <div class="quick-actions-grid">
+                    <div class="quick-action-item" id="actionImport">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-file-import"></i>
+                        </div>
+                        <span>导入账单</span>
+                    </div>
+                    <div class="quick-action-item" id="actionExport">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <span>导出数据</span>
+                    </div>
+                    <div class="quick-action-item" id="actionBudget">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span>预算管理</span>
+                    </div>
+                    <div class="quick-action-item" id="actionTheme">
+                        <div class="quick-action-icon">
+                            <i class="fas fa-moon"></i>
+                        </div>
+                        <span>主题切换</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 消费日历热力图 -->
-        <div class="calendar-heatmap" id="calendarHeatmap">
-            <div class="calendar-header">
-                <h3><i class="fas fa-calendar-alt"></i> 消费日历</h3>
+        <!-- Tab 2: 账单（记录） -->
+        <div class="tab-page" id="page-bills">
+            <!-- 查询筛选区域 -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>日期范围</label>
+                        <div class="date-range">
+                            <input type="date" id="dateStart">
+                            <span>至</span>
+                            <input type="date" id="dateEnd">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>快捷选择</label>
+                        <div class="quick-dates">
+                            <button class="quick-date-btn" data-range="today">今天</button>
+                            <button class="quick-date-btn" data-range="week">本周</button>
+                            <button class="quick-date-btn active" data-range="month">本月</button>
+                            <button class="quick-date-btn" data-range="year">本年</button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>账户</label>
+                        <div class="account-filters">
+                            <button class="account-filter-btn active" data-account="all">全部</button>
+                            <button class="account-filter-btn" data-account="wechat">
+                                <i class="fab fa-weixin"></i> 微信
+                            </button>
+                            <button class="account-filter-btn" data-account="alipay">
+                                <i class="fab fa-alipay"></i> 支付宝
+                            </button>
+                            <button class="account-filter-btn" data-account="cash">
+                                <i class="fas fa-money-bill"></i> 现金
+                            </button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>类型</label>
+                        <div class="type-filters">
+                            <button class="type-filter-btn active" data-type="all">全部</button>
+                            <button class="type-filter-btn" data-type="income">
+                                <i class="fas fa-arrow-down"></i> 收入
+                            </button>
+                            <button class="type-filter-btn" data-type="expense">
+                                <i class="fas fa-arrow-up"></i> 支出
+                            </button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>搜索</label>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="搜索交易对方、备注...">
+                            <button class="btn-clear-search" id="btnClearSearch" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn-reset-filter" id="btnResetFilter">
+                        <i class="fas fa-undo"></i> 重置
+                    </button>
+                </div>
             </div>
-            <div class="calendar-weekdays">
-                <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+
+            <!-- 消费日历热力图 -->
+            <div class="calendar-heatmap" id="calendarHeatmap">
+                <div class="calendar-header">
+                    <h3><i class="fas fa-calendar-alt"></i> 消费日历</h3>
+                </div>
+                <div class="calendar-weekdays">
+                    <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+                </div>
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- 动态生成 -->
+                </div>
             </div>
-            <div class="calendar-grid" id="calendarGrid">
-                <!-- 动态生成 -->
+
+            <!-- 记录列表 -->
+            <div class="records-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list"></i> 账单明细</h2>
+                    <div class="record-summary">
+                        <span>共 <strong id="recordCount">0</strong> 条记录</span>
+                        <span class="summary-divider">|</span>
+                        <span>收入: <strong class="income" id="filterIncome">¥0.00</strong></span>
+                        <span class="summary-divider">|</span>
+                        <span>支出: <strong class="expense" id="filterExpense">¥0.00</strong></span>
+                    </div>
+                </div>
+                <div class="records-list" id="recordsList">
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>还没有记录</p>
+                        <p class="empty-hint">点击"记一笔"或"导入账单"开始</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 记录列表 -->
-        <div class="records-section">
-            <div class="section-header">
-                <h2><i class="fas fa-list"></i> 账单明细</h2>
-                <div class="record-summary">
-                    <span>共 <strong id="recordCount">0</strong> 条记录</span>
-                    <span class="summary-divider">|</span>
-                    <span>收入: <strong class="income" id="filterIncome">¥0.00</strong></span>
-                    <span class="summary-divider">|</span>
-                    <span>支出: <strong class="expense" id="filterExpense">¥0.00</strong></span>
-                </div>
-            </div>
-            <div class="records-list" id="recordsList">
-                <div class="empty-state">
-                    <i class="fas fa-receipt"></i>
-                    <p>还没有记录</p>
-                    <p class="empty-hint">点击"记一笔"或"导入账单"开始</p>
+        <!-- Tab 3: 统计（图表） -->
+        <div class="tab-page" id="page-stats">
+            <!-- 图表统计区域 -->
+            <div class="charts-section">
+                <div class="charts-grid">
+                    <!-- 支出分类排行 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-bar"></i> 支出分类排行</h3>
+                        </div>
+                        <div class="category-rank-list" id="expenseRankList">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 预算执行进度 -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-tasks"></i> 预算执行进度</h3>
+                        </div>
+                        <div class="budget-progress-list" id="budgetProgressList">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 每日收支趋势 -->
+                    <div class="chart-card chart-wide">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-chart-line"></i> 每日收支趋势</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="dailyTrendChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <nav class="tab-bar">
+        <div class="tab-item active" data-tab="home">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="tab-item" data-tab="bills">
+            <i class="fas fa-receipt"></i>
+            <span>账单</span>
+        </div>
+        <div class="tab-item" data-tab="stats">
+            <i class="fas fa-chart-pie"></i>
+            <span>统计</span>
+        </div>
+    </nav>
 
     <!-- 记账弹窗 -->
     <div class="modal-overlay" id="modalOverlay">
