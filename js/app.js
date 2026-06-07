@@ -189,6 +189,14 @@ const App = {
                 ThemeModule.toggle();
             });
         }
+
+        // 清空数据
+        const actionClear = document.getElementById('actionClear');
+        if (actionClear) {
+            actionClear.addEventListener('click', () => {
+                document.getElementById('clearModal').classList.add('active');
+            });
+        }
     },
 
     /**
